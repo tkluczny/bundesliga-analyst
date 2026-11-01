@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import BilanzKarte from '../komponenten/BilanzKarte';
 import FehlerMeldung from '../komponenten/FehlerMeldung';
 import FormKurve from '../komponenten/FormKurve';
+import KIAnalyse from '../komponenten/KIAnalyse';
 import LadeAnzeige from '../komponenten/LadeAnzeige';
 import Wappen from '../komponenten/Wappen';
 import { useFetch } from '../hooks/useFetch';
@@ -11,6 +12,7 @@ import type { ApiSpiel, ApiTabellenEintrag } from '../typen/openligadb';
 import { apiUrls } from '../utils/api';
 import { formatiereDatum, formatiereUhrzeit } from '../utils/formatierung';
 import { aktuelleSaison, saisonText } from '../utils/konfiguration';
+import { formanalyseNachrichten } from '../utils/prompts';
 import { berechneTeamStatistik, naechstesSpiel, teamSpiele, torschuetzen } from '../utils/statistik';
 
 const SAISON = aktuelleSaison();
@@ -145,6 +147,25 @@ function TeamDetail(): React.JSX.Element {
           )}
         </section>
       </div>
+
+      {/* key: beim Wechsel zu einem anderen Team startet die KI-Komponente frisch */}
+      <KIAnalyse
+        key={teamId}
+        titel="KI-Formanalyse"
+        beschreibung={`Die KI wertet die oben angezeigten Saisondaten von ${eintrag.teamName} aus und fasst Stärken, Schwächen und Trend zusammen.`}
+        knopfText="Formanalyse erstellen"
+        erstelleNachrichten={() =>
+          formanalyseNachrichten({
+            teamName: eintrag.teamName,
+            saison: saisonText(SAISON),
+            platz: platzIndex + 1,
+            punkte: eintrag.points,
+            statistik,
+            spiele: auswertung.spiele,
+            torschuetzen: auswertung.torschuetzen,
+          })
+        }
+      />
     </article>
   );
 }
