@@ -699,3 +699,118 @@ textarea:focus-visible {
   font-size: 0.85rem;
   color: var(--farbe-text-hell);
 }
+
+/* ---------- Formular & Duell ---------- */
+.duell-formular {
+  margin-bottom: 1.5rem;
+}
+
+.formular-zeile {
+  display: grid;
+  gap: 1rem;
+}
+
+.formular-feld label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.formular-feld select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  border: 1px solid var(--farbe-text-hell);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.formular-feld select[aria-invalid='true'] {
+  border: 2px solid var(--farbe-niederlage);
+}
+
+.feld-fehler {
+  margin: 0.3rem 0 0;
+  color: var(--farbe-niederlage);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.feld-fehler::before {
+  content: '⚠ ';
+}
+
+.schwerpunkt {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--farbe-rand);
+  border-radius: var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.schwerpunkt legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+.radio-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.radio-option input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--farbe-primaer);
+}
+
+.formular-hinweis {
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+  color: var(--farbe-text-hell);
+}
+
+.duell-ergebnis {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.duell-teams {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.duell-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  background: var(--farbe-hintergrund);
+}
+
+.duell-team h3 {
+  margin: 0;
+}
+
+.duell-team .untertitel {
+  font-size: 0.9rem;
+}
+
+.duell-vergleich h3 {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .formular-zeile,
+  .duell-teams {
+    grid-template-columns: 1fr 1fr;
+  }
+}
