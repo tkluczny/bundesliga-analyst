@@ -14,7 +14,11 @@ const STATUS_TEXT = {
   geplant: 'Geplant',
 } as const;
 
-function TeamZeile({ team }: { team: ApiTeam }): React.JSX.Element {
+interface TeamZeileProps {
+  team: ApiTeam;
+}
+
+function TeamZeile({ team }: TeamZeileProps): React.JSX.Element {
   return (
     <Link to={`/team/${team.teamId}`} className="team-link">
       <Wappen url={team.teamIconUrl} teamName={team.teamName} groesse={32} />
