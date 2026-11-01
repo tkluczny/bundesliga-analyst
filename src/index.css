@@ -90,3 +90,107 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Layout: Kopfzeile, Inhalt, Fußzeile ---------- */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--farbe-primaer-dunkel);
+  color: #fff;
+  border-radius: var(--radius);
+}
+
+.kopfzeile {
+  background: var(--farbe-primaer);
+  color: #fff;
+}
+
+.kopfzeile-inhalt {
+  max-width: var(--inhalt-breite);
+  margin: 0 auto;
+  padding: 0.75rem var(--abstand);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.logo {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-decoration: none;
+}
+
+.navigation {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.nav-link.aktiv {
+  background: #fff;
+  color: var(--farbe-primaer-dunkel);
+}
+
+.inhalt {
+  max-width: var(--inhalt-breite);
+  margin: 0 auto;
+  padding: 1.5rem var(--abstand) 2.5rem;
+}
+
+.inhalt:focus {
+  outline: none;
+}
+
+.fusszeile {
+  border-top: 1px solid var(--farbe-rand);
+  padding: 1.25rem var(--abstand);
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--farbe-text-hell);
+}
+
+.fusszeile p {
+  margin: 0.25rem 0;
+}
+
+.karte {
+  background: var(--farbe-flaeche);
+  border: 1px solid var(--farbe-rand);
+  border-radius: var(--radius);
+  box-shadow: var(--schatten);
+  padding: 1.25rem;
+}
+
+/* Ab Tablet-Breite: Logo und Navigation nebeneinander */
+@media (min-width: 768px) {
+  .kopfzeile-inhalt {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
