@@ -419,3 +419,62 @@ textarea:focus-visible {
     display: table-cell;
   }
 }
+
+/* ---------- Spieltag ---------- */
+.spieltag-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.spiel-liste {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+
+.spiel-karte {
+  background: var(--farbe-flaeche);
+  border: 1px solid var(--farbe-rand);
+  border-radius: var(--radius);
+  box-shadow: var(--schatten);
+  padding: 1rem;
+}
+
+.spiel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--farbe-text-hell);
+}
+
+.status {
+  font-weight: 600;
+}
+
+.status-beendet { color: var(--farbe-text-hell); }
+.status-laufend { color: var(--farbe-niederlage); }
+.status-geplant { color: var(--farbe-primaer); }
+
+.spiel-teams {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.spiel-ergebnis {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--farbe-primaer-dunkel);
+}
+
+.spiel-halbzeit {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--farbe-text-hell);
+}
