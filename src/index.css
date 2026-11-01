@@ -194,3 +194,75 @@ textarea:focus-visible {
     justify-content: space-between;
   }
 }
+
+/* ---------- Lade- und Fehlerzustände, Buttons ---------- */
+.lade-anzeige {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0;
+  color: var(--farbe-text-hell);
+}
+
+.spinner {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 3px solid var(--farbe-rand);
+  border-top-color: var(--farbe-primaer);
+  border-radius: 50%;
+  animation: drehen 0.8s linear infinite;
+}
+
+@keyframes drehen {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fehler-meldung {
+  background: var(--farbe-fehler-hintergrund);
+  border: 1px solid #f5c2bc;
+  border-left: 4px solid var(--farbe-niederlage);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+
+.fehler-meldung p {
+  margin: 0 0 0.5rem;
+}
+
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  border: 2px solid var(--farbe-primaer);
+  background: var(--farbe-primaer);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.knopf:hover {
+  background: var(--farbe-primaer-dunkel);
+  border-color: var(--farbe-primaer-dunkel);
+}
+
+.knopf:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.knopf-zweitrangig {
+  background: #fff;
+  color: var(--farbe-primaer);
+}
+
+.knopf-zweitrangig:hover {
+  background: #e7f1ec;
+  color: var(--farbe-primaer-dunkel);
+}
