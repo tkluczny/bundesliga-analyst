@@ -266,3 +266,156 @@ textarea:focus-visible {
   background: #e7f1ec;
   color: var(--farbe-primaer-dunkel);
 }
+
+/* ---------- Seitenkopf ---------- */
+.seitenkopf {
+  margin-bottom: 1.25rem;
+}
+
+.untertitel {
+  margin: 0;
+  color: var(--farbe-text-hell);
+}
+
+/* ---------- Wappen ---------- */
+.wappen {
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.wappen-platzhalter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--farbe-rand);
+  color: var(--farbe-primaer-dunkel);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* ---------- Tabelle ---------- */
+.tabelle-container {
+  background: var(--farbe-flaeche);
+  border: 1px solid var(--farbe-rand);
+  border-radius: var(--radius);
+  box-shadow: var(--schatten);
+  overflow-x: auto;
+}
+
+.tabelle {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabelle caption {
+  text-align: left;
+  padding: 0.9rem 1rem 0.4rem;
+  font-weight: 600;
+  color: var(--farbe-text-hell);
+}
+
+.tabelle th,
+.tabelle td {
+  padding: 0.55rem 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--farbe-rand);
+}
+
+.tabelle th:nth-child(2),
+.tabelle td:nth-child(2) {
+  text-align: left;
+}
+
+.tabelle thead th {
+  font-size: 0.85rem;
+  color: var(--farbe-text-hell);
+}
+
+.tabelle abbr {
+  text-decoration: none;
+}
+
+.tabelle tbody tr:hover {
+  background: #f0f6f3;
+}
+
+.tabelle tbody tr {
+  border-left: 4px solid transparent;
+}
+
+.spalte-platz {
+  font-weight: 700;
+}
+
+.spalte-punkte {
+  font-weight: 700;
+  color: var(--farbe-primaer-dunkel);
+}
+
+.team-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--farbe-text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.team-link:hover .team-name-lang,
+.team-link:hover .team-name-kurz {
+  text-decoration: underline;
+}
+
+/* Mobil: Kurznamen und weniger Spalten */
+.team-name-lang,
+.spalte-optional {
+  display: none;
+}
+
+/* Tabellenzonen (zusätzlich als Text für Screenreader vorhanden) */
+.tabelle tr.zone-cl { border-left-color: #1a7f37; }
+.tabelle tr.zone-el { border-left-color: #2f6fb5; }
+.tabelle tr.zone-relegation { border-left-color: #c99700; }
+.tabelle tr.zone-abstieg { border-left-color: #b42318; }
+
+.legende {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0.75rem 1rem 1rem;
+  font-size: 0.85rem;
+  color: var(--farbe-text-hell);
+}
+
+.legende li::before {
+  content: '';
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.4rem;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+
+.legende .zone-cl::before { background: #1a7f37; }
+.legende .zone-el::before { background: #2f6fb5; }
+.legende .zone-relegation::before { background: #c99700; }
+.legende .zone-abstieg::before { background: #b42318; }
+
+@media (min-width: 768px) {
+  .team-name-kurz {
+    display: none;
+  }
+
+  .team-name-lang {
+    display: inline;
+  }
+
+  .spalte-optional {
+    display: table-cell;
+  }
+}
