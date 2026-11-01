@@ -478,3 +478,134 @@ textarea:focus-visible {
   font-size: 0.85rem;
   color: var(--farbe-text-hell);
 }
+
+/* ---------- Teamseite ---------- */
+.team-kopf {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.team-kopf h1 {
+  margin: 0;
+}
+
+.team-abschnitt {
+  margin-bottom: 1.5rem;
+}
+
+.team-abschnitt h2 {
+  margin-top: 0;
+}
+
+.bilanz-raster {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+.bilanz-karte {
+  background: var(--farbe-flaeche);
+  border: 1px solid var(--farbe-rand);
+  border-top: 4px solid var(--farbe-primaer);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+}
+
+.bilanz-karte h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.bilanz-karte dl {
+  margin: 0;
+}
+
+.bilanz-karte dl div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem 0;
+}
+
+.bilanz-karte dt {
+  color: var(--farbe-text-hell);
+}
+
+.bilanz-karte dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-raster {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.team-raster h2 {
+  margin-top: 0;
+}
+
+.form-kurve {
+  list-style: none;
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+}
+
+.form-kurve li,
+.ergebnis-punkt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 800;
+}
+
+.ergebnis-punkt {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 0.85rem;
+}
+
+.form-S { background: var(--farbe-sieg); }
+.form-U { background: var(--farbe-unentschieden); }
+.form-N { background: var(--farbe-niederlage); }
+
+.ergebnis-liste,
+.torschuetzen-liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ergebnis-liste li,
+.torschuetzen-liste li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--farbe-rand);
+}
+
+.ergebnis-liste li > span:nth-child(2),
+.torschuetzen-liste li > span {
+  flex: 1;
+}
+
+.naechstes-spiel {
+  margin: 1rem 0 0;
+  color: var(--farbe-text-hell);
+}
+
+@media (min-width: 768px) {
+  .team-raster {
+    grid-template-columns: 2fr 1fr;
+  }
+}
