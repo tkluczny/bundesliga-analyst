@@ -30,12 +30,13 @@ zusammen.
 - **React Router** für die Navigation zwischen den Seiten
 - **OpenLigaDB** (<https://www.openligadb.de>) – freie REST-API für Fußballdaten, ohne API-Key;
   Daten unter der Open Database License (ODbL)
-- **OpenAI Chat Completions API** mit **Streaming** für die KI-Texte
+- **Google Gemini API** (`streamGenerateContent`) mit **Streaming** für die KI-Texte
 - Eigenes CSS (Mobile First, CSS-Variablen, Grid und Flexbox), keine UI-Bibliothek
 
 ## Installation und Start
 
-Voraussetzung: Node.js (LTS) und ein OpenAI-API-Key.
+Voraussetzung: Node.js (LTS) und ein kostenloser Gemini-API-Key aus
+[Google AI Studio](https://aistudio.google.com/apikey).
 
 ```bash
 npm install
@@ -44,8 +45,8 @@ npm install
 Danach die Datei `.env.example` kopieren, die Kopie `.env` nennen und den eigenen Key eintragen:
 
 ```
-VITE_OPENAI_API_KEY=sk-...
-VITE_OPENAI_MODEL=gpt-4o-mini
+VITE_GEMINI_API_KEY=...
+VITE_GEMINI_MODEL=gemini-flash-latest
 ```
 
 ```bash
@@ -98,6 +99,13 @@ Update-Form `setText(alt => alt + token)` angehängt. Fehler der API (ungültige
 aufgebraucht, Modell nicht verfügbar, Rate Limit) werden in verständliche deutsche Meldungen
 übersetzt.
 
+**KI-Anbieter austauschbar.** Die App arbeitet intern mit einem anbieterneutralen
+Nachrichtenformat (`system`/`user`/`assistant`). Nur `utils/aiStream.ts` kennt die Gemini-API und
+wandelt das Format um (System-Nachricht → `systemInstruction`, `assistant` → `model`). Ursprünglich
+war OpenAI geplant; der Wechsel zu Gemini betraf nur diese eine Datei und die `.env`. Als Modell ist
+der Google-Alias `gemini-flash-latest` voreingestellt, damit die App nicht ausfällt, wenn Google
+ältere Modellversionen abschaltet. Interne „Denk“-Teile des Modells werden nicht angezeigt.
+
 **Barrierefreiheit von Beginn an.** Semantisches HTML, Skip-Link, `aria-label` an der
 Navigation, Tabellen mit `caption` und `scope`, Formular mit `label`, `aria-invalid` und
 `aria-describedby` für Fehlermeldungen, `role="status"`/`role="alert"` für Lade- und
@@ -120,14 +128,17 @@ Konzept, Umsetzung, Test und Dokumentation – liegen in einer Hand.
 
 ### KI in der Anwendung
 
-- **Modell:** OpenAI-Modell laut `VITE_OPENAI_MODEL` (Standard `gpt-4o-mini`), Chat Completions
-  API mit Streaming
+- **Modell:** Google Gemini laut `VITE_GEMINI_MODEL` (Standard: Alias `gemini-flash-latest`),
+  Endpunkt `streamGenerateContent` mit Server-Sent Events
 - **Zweck:** Formanalyse eines Teams und neutrale Duell-Vorschau
 - **Gesendete Daten:** ausschließlich öffentliche Fußballstatistiken aus der OpenLigaDB und der
-  feste System-Prompt – keine personenbezogenen Daten der Nutzerinnen und Nutzer
+  feste System-Prompt – keine personenbezogenen Daten der Nutzerinnen und Nutzer. (Im Gratis-Tarif
+  darf Google Eingaben zur Verbesserung seiner Dienste nutzen; deshalb werden keine persönlichen
+  Daten übertragen.)
 - **Kennzeichnung:** Alle KI-Texte sind sichtbar als „KI-generiert“ markiert und mit dem Hinweis
   versehen, dass KI Fehler machen kann
-- **Kostenkontrolle:** Antwortlänge über `max_completion_tokens` begrenzt; die KI wird nur auf
+- **Kostenkontrolle:** kostenloses Kontingent der Gemini-API, Antwortlänge über `maxOutputTokens`
+  begrenzt; die KI wird nur auf
   Knopfdruck aufgerufen, nicht automatisch beim Laden
 
 ### KI bei der Entwicklung
@@ -144,8 +155,9 @@ Konkrete Fälle, in denen Vorlagen nicht unverändert übernommen, sondern angep
 - Die Streaming-Funktion aus Modul 05 verarbeitet jedes Datenpaket isoliert. Ergänzt wurde ein
   Zeilenpuffer, damit an Paketgrenzen zerschnittene Zeilen nicht verloren gehen, sowie ein
   Abbruch per `AbortController`.
-- Statt `max_tokens` wird `max_completion_tokens` verwendet und auf `temperature` verzichtet,
-  damit der Aufruf auch mit neueren OpenAI-Modellen funktioniert.
+- Die Beispiele in Modul 05 nutzen das OpenAI-Format. Für Gemini wurde der Aufruf auf
+  `streamGenerateContent?alt=sse` umgestellt, der Key wird im Header `x-goog-api-key` statt in der
+  URL übergeben, und leere oder blockierte Antworten erzeugen eine verständliche Fehlermeldung.
 
 <!-- Bitte vor der Abgabe ergänzen: eigene Tests, Änderungen und Erfahrungen mit dem KI-Einsatz -->
 

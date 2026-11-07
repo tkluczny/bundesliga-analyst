@@ -1,41 +1,78 @@
-import type { Nachricht, OpenAIFehlerAntwort, StreamChunk } from '../typen/ai';
+import type {
+  GeminiFehlerAntwort,
+  GeminiInhalt,
+  GeminiStreamChunk,
+  Nachricht,
+} from '../typen/ai';
 
-const API_URL = 'https://api.openai.com/v1/chat/completions';
+const API_BASIS = 'https://generativelanguage.googleapis.com/v1beta/models';
 
-/** Standardmodell, falls in der .env keines angegeben ist (VITE_OPENAI_MODEL) */
-const STANDARD_MODELL = 'gpt-4o-mini';
+/**
+ * Standardmodell, falls in der .env keines angegeben ist (VITE_GEMINI_MODEL).
+ * "gemini-flash-latest" ist ein Alias von Google, der immer auf das aktuelle
+ * Flash-Modell zeigt – so bleibt die App lauffähig, wenn Google Modelle austauscht.
+ */
+const STANDARD_MODELL = 'gemini-flash-latest';
 
-/** Obergrenze für die Länge einer Antwort – begrenzt auch die Kosten */
-const MAX_TOKENS = 1500;
+/** Obergrenze für die Länge einer Antwort (inkl. internem "Nachdenken" des Modells) */
+const MAX_TOKENS = 4096;
+
+/**
+ * Wandelt das anbieterneutrale Nachrichtenformat der App in das Gemini-Format um:
+ * - Die System-Nachricht wird zur "systemInstruction".
+ * - Die Rolle "assistant" heißt bei Gemini "model".
+ */
+function inGeminiFormat(nachrichten: Nachricht[]): {
+  systemInstruction?: { parts: Array<{ text: string }> };
+  contents: GeminiInhalt[];
+} {
+  const systemText = nachrichten
+    .filter((n) => n.role === 'system')
+    .map((n) => n.content)
+    .join('\n\n');
+
+  const contents = nachrichten
+    .filter((n) => n.role !== 'system')
+    .map(
+      (n): GeminiInhalt => ({
+        role: n.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: n.content }],
+      }),
+    );
+
+  return {
+    ...(systemText ? { systemInstruction: { parts: [{ text: systemText }] } } : {}),
+    contents,
+  };
+}
 
 /** Übersetzt Fehlerantworten der API in verständliche deutsche Meldungen */
 async function fehlerText(antwort: Response, modell: string): Promise<string> {
-  let details: OpenAIFehlerAntwort = {};
+  let details: GeminiFehlerAntwort = {};
   try {
-    details = (await antwort.json()) as OpenAIFehlerAntwort;
+    details = (await antwort.json()) as GeminiFehlerAntwort;
   } catch {
     // Antwort war kein JSON – dann bleibt es bei der allgemeinen Meldung
   }
-  const code = details.error?.code ?? '';
   const meldung = details.error?.message ?? '';
 
-  if (antwort.status === 401) {
-    return 'Der OpenAI-API-Key ist ungültig. Bitte den Key in der Datei .env prüfen.';
+  if (antwort.status === 400 && /api key/i.test(meldung)) {
+    return 'Der Gemini-API-Key ist ungültig. Bitte den Key in der Datei .env prüfen.';
   }
-  if (antwort.status === 429 && code === 'insufficient_quota') {
-    return 'Das OpenAI-Guthaben ist aufgebraucht oder das Ausgabenlimit erreicht.';
+  if (antwort.status === 403) {
+    return 'Der Gemini-API-Key hat keine Berechtigung für diese Anfrage. Bitte den Key in Google AI Studio prüfen.';
   }
   if (antwort.status === 429) {
-    return 'Zu viele Anfragen in kurzer Zeit. Bitte einen Moment warten und erneut versuchen.';
+    return 'Das Gratis-Kontingent der Gemini-API ist im Moment ausgeschöpft. Bitte etwas warten und erneut versuchen.';
   }
-  if (antwort.status === 404 || code === 'model_not_found') {
-    return `Das KI-Modell „${modell}“ ist für diesen API-Key nicht verfügbar. Bitte in der .env unter VITE_OPENAI_MODEL ein verfügbares Modell eintragen.`;
+  if (antwort.status === 404) {
+    return `Das KI-Modell „${modell}“ ist nicht verfügbar. Bitte in der .env unter VITE_GEMINI_MODEL ein Modell aus Google AI Studio eintragen.`;
   }
   return `Die KI hat einen Fehler gemeldet (HTTP ${antwort.status})${meldung ? `: ${meldung}` : '.'}`;
 }
 
 /**
- * Sendet Nachrichten an die OpenAI-API und liefert die Antwort Token für Token (Streaming).
+ * Sendet Nachrichten an die Google-Gemini-API und liefert die Antwort Stück für Stück (Streaming).
  *
  * Gegenüber dem Beispiel aus Modul 05 (Abschnitt 3.2) zwei Verbesserungen:
  * 1. Puffer: Ein Chunk kann mitten in einer Zeile enden. Unvollständige Zeilen werden
@@ -47,27 +84,29 @@ export async function streamChat(
   onToken: (token: string) => void,
   signal: AbortSignal,
 ): Promise<void> {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error(
-      'Kein OpenAI-API-Key gefunden. Bitte VITE_OPENAI_API_KEY in der Datei .env eintragen und den Entwicklungsserver neu starten.',
+      'Kein Gemini-API-Key gefunden. Bitte VITE_GEMINI_API_KEY in der Datei .env eintragen und den Entwicklungsserver neu starten.',
     );
   }
-  const modell = import.meta.env.VITE_OPENAI_MODEL || STANDARD_MODELL;
+  const modell = import.meta.env.VITE_GEMINI_MODEL || STANDARD_MODELL;
+
+  // alt=sse: Antwort als Server-Sent Events (Zeilen der Form "data: {...}")
+  const url = `${API_BASIS}/${encodeURIComponent(modell)}:streamGenerateContent?alt=sse`;
 
   let antwort: Response;
   try {
-    antwort = await fetch(API_URL, {
+    antwort = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
+        // Key im Header statt in der URL – so landet er nicht in Logs oder im Verlauf
+        'x-goog-api-key': apiKey,
       },
       body: JSON.stringify({
-        model: modell,
-        messages: nachrichten,
-        stream: true,
-        max_completion_tokens: MAX_TOKENS,
+        ...inGeminiFormat(nachrichten),
+        generationConfig: { maxOutputTokens: MAX_TOKENS },
       }),
       signal,
     });
@@ -85,6 +124,28 @@ export async function streamChat(
 
   const decoder = new TextDecoder();
   let puffer = '';
+  let hatText = false;
+  let blockGrund: string | null = null;
+
+  /** Verarbeitet eine vollständige Zeile des Datenstroms */
+  const verarbeiteZeile = (zeile: string): void => {
+    const inhalt = zeile.trim();
+    if (!inhalt.startsWith('data:')) return; // Leerzeilen o. Ä. überspringen
+
+    try {
+      const chunk = JSON.parse(inhalt.slice(5).trim()) as GeminiStreamChunk;
+      blockGrund = chunk.promptFeedback?.blockReason ?? blockGrund;
+      const teile = chunk.candidates?.[0]?.content?.parts ?? [];
+      for (const teil of teile) {
+        if (teil.text && !teil.thought) {
+          hatText = true;
+          onToken(teil.text);
+        }
+      }
+    } catch {
+      // Defektes Paket ignorieren, der Stream läuft weiter
+    }
+  };
 
   while (true) {
     const { done, value } = await reader.read();
@@ -93,21 +154,15 @@ export async function streamChat(
     puffer += decoder.decode(value, { stream: true });
     const zeilen = puffer.split('\n');
     puffer = zeilen.pop() ?? ''; // letzte, evtl. unvollständige Zeile aufheben
+    zeilen.forEach(verarbeiteZeile);
+  }
+  verarbeiteZeile(puffer); // Rest nach Ende des Streams
 
-    for (const zeile of zeilen) {
-      const inhalt = zeile.trim();
-      if (!inhalt.startsWith('data:')) continue; // Leerzeilen o. Ä. überspringen
-
-      const daten = inhalt.slice(5).trim();
-      if (daten === '[DONE]') return; // Ende des Streams
-
-      try {
-        const chunk = JSON.parse(daten) as StreamChunk;
-        const token = chunk.choices?.[0]?.delta?.content;
-        if (token) onToken(token);
-      } catch {
-        // Defektes Paket ignorieren, der Stream läuft weiter
-      }
-    }
+  if (!hatText) {
+    throw new Error(
+      blockGrund
+        ? `Die KI hat die Anfrage aus Sicherheitsgründen abgelehnt (${blockGrund}).`
+        : 'Die KI hat keine Antwort geliefert. Bitte erneut versuchen.',
+    );
   }
 }

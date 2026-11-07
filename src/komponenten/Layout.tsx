@@ -28,7 +28,7 @@ function Layout(): React.JSX.Element {
           <a href="https://www.openligadb.de" target="_blank" rel="noreferrer">
             OpenLigaDB
           </a>{' '}
-          (Open Database License) · KI-Analysen: OpenAI
+          (Open Database License) · KI-Analysen: Google Gemini
         </p>
         <p>Einsendeaufgabe 2 · Front-End Development (SED502) · Thomas Kluczny</p>
       </footer>
