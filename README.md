@@ -106,6 +106,17 @@ war OpenAI geplant; der Wechsel zu Gemini betraf nur diese eine Datei und die `.
 der Google-Alias `gemini-flash-latest` voreingestellt, damit die App nicht ausfällt, wenn Google
 ältere Modellversionen abschaltet. Interne „Denk“-Teile des Modells werden nicht angezeigt.
 
+**Antwortzeit und Ausfallsicherheit der KI.** Beim Testen traten zwei Probleme auf: Das Modell
+„dachte“ standardmäßig so gründlich nach, dass selbst eine Ein-Wort-Antwort über 20 Sekunden
+brauchte, und zeitweise meldete Google für `gemini-flash-latest` „high demand“ (HTTP 503) – in der
+App hüpften die Ladepunkte dann scheinbar endlos. Gelöst wurde das in `utils/aiStream.ts`:
+Die Anfrage setzt eine niedrige Denkstufe (`thinkingConfig.thinkingLevel: 'low'`), weil für das
+Zusammenfassen vorgegebener Zahlen kein tiefes Nachdenken nötig ist. Ist ein Modell überlastet,
+das Kontingent erschöpft oder das Modell nicht verfügbar (503, 429, 500, 404), probiert die App
+automatisch die Ausweichmodelle `gemini-flash-lite-latest` und `gemini-2.5-flash`. Kennt ein
+Modell die Denkstufe nicht, wird die Anfrage ohne sie wiederholt. Ergebnis im Test: Der erste
+Text der Formanalyse erscheint nach rund sechs Sekunden.
+
 **Barrierefreiheit von Beginn an.** Semantisches HTML, Skip-Link, `aria-label` an der
 Navigation, Tabellen mit `caption` und `scope`, Formular mit `label`, `aria-invalid` und
 `aria-describedby` für Fehlermeldungen, `role="status"`/`role="alert"` für Lade- und
@@ -128,8 +139,9 @@ Konzept, Umsetzung, Test und Dokumentation – liegen in einer Hand.
 
 ### KI in der Anwendung
 
-- **Modell:** Google Gemini laut `VITE_GEMINI_MODEL` (Standard: Alias `gemini-flash-latest`),
-  Endpunkt `streamGenerateContent` mit Server-Sent Events
+- **Modell:** Google Gemini laut `VITE_GEMINI_MODEL` (Standard: Alias `gemini-flash-latest`;
+  bei Überlastung automatisch `gemini-flash-lite-latest` bzw. `gemini-2.5-flash`), Endpunkt
+  `streamGenerateContent` mit Server-Sent Events, niedrige Denkstufe für kurze Antwortzeiten
 - **Zweck:** Formanalyse eines Teams und neutrale Duell-Vorschau
 - **Gesendete Daten:** ausschließlich öffentliche Fußballstatistiken aus der OpenLigaDB und der
   feste System-Prompt – keine personenbezogenen Daten der Nutzerinnen und Nutzer. (Im Gratis-Tarif
