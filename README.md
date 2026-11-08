@@ -132,7 +132,7 @@ landen, ist diese Lösung nur für die lokale Entwicklung gedacht. Für das öff
 
 ## Aufgabenverteilung
 
-Einzelarbeit von Thomas Kluczny . Alle Teile –
+Einzelarbeit von Thomas Kluczny. Alle Teile –
 Konzept, Umsetzung, Test und Dokumentation – liegen in einer Hand.
 
 ## Dokumentation des KI-Einsatzes
