@@ -132,7 +132,7 @@ landen, ist diese Lösung nur für die lokale Entwicklung gedacht. Für das öff
 
 ## Aufgabenverteilung
 
-Einzelarbeit von Thomas Kluczny (mit Zustimmung der Lehrperson vom TT.MM.2026). Alle Teile –
+Einzelarbeit von Thomas Kluczny . Alle Teile –
 Konzept, Umsetzung, Test und Dokumentation – liegen in einer Hand.
 
 ## Dokumentation des KI-Einsatzes
@@ -171,7 +171,24 @@ Konkrete Fälle, in denen Vorlagen nicht unverändert übernommen, sondern angep
   `streamGenerateContent?alt=sse` umgestellt, der Key wird im Header `x-goog-api-key` statt in der
   URL übergeben, und leere oder blockierte Antworten erzeugen eine verständliche Fehlermeldung.
 
-<!-- Bitte vor der Abgabe ergänzen: eigene Tests, Änderungen und Erfahrungen mit dem KI-Einsatz -->
+### Eigene Tests und Erfahrungen
+
+- **Getestet** wurden alle Seiten lokal mit echten Daten der Saison 2026/27: Tabelle, Blättern
+  zwischen Spieltagen, Teamseiten (z. B. FC Bayern München, Hamburger SV), die Duell-Vorschau
+  (z. B. 1. FC Köln gegen Bayer 04 Leverkusen) sowie das Formular mit ungültigen Eingaben
+  (kein Team gewählt, zweimal dasselbe Team).
+- **KI-Texte nachgeprüft:** Die Aussagen der KI wurden stichprobenartig mit den angezeigten Zahlen
+  verglichen – etwa Punkte aus Siegen und Remis, die Reihenfolge der Formkurve oder die Summe der
+  direkten Duelle. Erfundene Fakten sind dabei nicht aufgefallen; die Vorgabe „nur gelieferte
+  Daten verwenden“ im System-Prompt hat sich bewährt.
+- **Problem beim Testen:** Die KI-Analyse schien zunächst endlos zu laden. Die Ursache lag nicht
+  im eigenen Code, sondern bei der API (lange Denkzeit des Modells, zeitweise Überlastung). Die
+  Lösung – niedrige Denkstufe und Ausweichmodelle – ist oben unter „Antwortzeit und
+  Ausfallsicherheit der KI“ beschrieben.
+- **Erkenntnis:** KI-generierter Code spart viel Zeit, muss aber verstanden und mit echten Daten
+  getestet werden. Fehler zeigen sich oft erst im Zusammenspiel mit externen Diensten.
+- **Sicherheit:** Beim Erstellen von Screenshots wurde der API-Key einmal versehentlich sichtbar.
+  Der Key wurde daraufhin in Google AI Studio gelöscht und durch einen neuen ersetzt.
 
 ## Bekannte Grenzen
 
